@@ -23,7 +23,7 @@
 const CONFIG = {
 
   // ★ APNI NAYI GROQ API KEY YAHAN PASTE KARO ★
-  API_KEY: "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",
+  API_KEY: "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",
 
   // Groq API endpoint — mat badlo
   API_ENDPOINT: "https://api.groq.com/openai/v1/chat/completions",
