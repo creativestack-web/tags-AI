@@ -223,66 +223,56 @@ Rules:
 - Lowercase only
 - No hashtags, quotes, or special characters
 - No duplicate tags
-- Return ONLY this exact JSON format, nothing else, no extra text:
+- Return ONLY this exact JSON format, nothing else:
 
 {"tags":["tag one","tag two","tag three","tag four","tag five","tag six","tag seven","tag eight","tag nine","tag ten","tag eleven","tag twelve","tag thirteen","tag fourteen","tag fifteen","tag sixteen","tag seventeen","tag eighteen","tag nineteen","tag twenty"]}`;
 
   let response;
 
   try {
-    response = await fetch(CONFIG.API_ENDPOINT, {
-      method: 'POST',
+    response = await fetch("/api/generate-tags", {
+      method: "POST",
       headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + CONFIG.API_KEY,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model:       CONFIG.MODEL,
-        max_tokens:  CONFIG.MAX_TOKENS,
-        messages: [
-          {
-            role:    'user',
-            content: prompt,
-          }
-        ],
-        temperature: 0.7,
-      }),
+        prompt: prompt
+      })
     });
 
   } catch (networkErr) {
-    throw new Error('network_error');
+    throw new Error("network_error");
   }
 
-  // HTTP errors handle karo
   if (!response.ok) {
     const errorBody = await safeParseJSON(response);
-    const status    = response.status;
+    const status = response.status;
 
     if (status === 401) {
-      throw new Error('invalid_key');
+      throw new Error("invalid_key");
     } else if (status === 429) {
-      throw new Error('rate_limit');
+      throw new Error("rate_limit");
     } else if (status === 500 || status === 503) {
-      throw new Error('server_error');
+      throw new Error("server_error");
     } else {
-      const msg = errorBody?.error?.message || `HTTP ${status}`;
-      throw new Error('api_error:' + msg);
+      const msg = errorBody?.error || `HTTP ${status}`;
+      throw new Error("api_error:" + msg);
     }
   }
 
-  // Response parse karo
-  const data    = await safeParseJSON(response);
-  const rawText = data?.choices?.[0]?.message?.content?.trim();
+  const data = await safeParseJSON(response);
+
+  const rawText =
+    data?.choices?.[0]?.message?.content?.trim();
 
   if (!rawText) {
-    throw new Error('empty_response');
+    throw new Error("empty_response");
   }
 
-  // Tags nikalo
   const tags = parseTagsFromText(rawText);
 
   if (!tags || tags.length === 0) {
-    throw new Error('no_tags');
+    throw new Error("no_tags");
   }
 
   return tags;
