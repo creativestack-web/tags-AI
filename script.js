@@ -29,7 +29,7 @@ const CONFIG = {
   API_ENDPOINT: "https://api.groq.com/openai/v1/chat/completions",
 
   // Free Groq model
-  MODEL: "model: "openai/gpt-oss-120b"",
+  MODEL: "openai/gpt-oss-120b",
 
   // Maximum tokens
   MAX_TOKENS: 600,
