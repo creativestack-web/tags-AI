@@ -21,17 +21,6 @@
      Public website ke liye backend use karo.
    ---------------------------------------------------------------- */
 const CONFIG = {
-
-  // ★ APNI NAYI GROQ API KEY YAHAN PASTE KARO ★
-  API_KEY: "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",
-
-  // Groq API endpoint — mat badlo
-  API_ENDPOINT: "https://api.groq.com/openai/v1/chat/completions",
-
-  // Free Groq model
-  MODEL: "openai/gpt-oss-120b",
-
-  // Maximum tokens
   MAX_TOKENS: 600,
 };
 
@@ -200,20 +189,6 @@ async function handleGenerateTags() {
   if (userInput.length < 3) {
     showError('Your input is too short. Please enter at least 3 characters.');
     DOM.videoInput.focus();
-    return;
-  }
-
-  // API key check karo
-  if (
-    !CONFIG.API_KEY ||
-    CONFIG.API_KEY.trim() === '' ||
-    CONFIG.API_KEY === 'APNI_GROQ_KEY_YAHAN_PASTE_KARO' ||
-    CONFIG.API_KEY.length < 20
-  ) {
-    showError(
-      'API key nahi lagi hai. script.js file kholo aur CONFIG mein ' +
-      'APNI_GROQ_KEY_YAHAN_PASTE_KARO ki jagah apni Groq API key paste karo.'
-    );
     return;
   }
 
