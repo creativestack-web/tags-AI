@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E040FB;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="64" height="64" rx="14" ry="14" fill="url(#bgGrad)" />
+
+  <!-- Shine overlay -->
+  <rect width="64" height="64" rx="14" ry="14" fill="url(#shineGrad)" />
+
+  <!-- Tag shape -->
+  <path
+    d="M14 14 L36 14 L50 28 L36 50 L14 50 Z"
+    fill="none"
+    stroke="white"
+    stroke-width="3.5"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    opacity="0.25"
+  />
+
+  <!-- Lightning bolt — AI symbol -->
+  <polygon
+    points="35,14 24,33 31,33 29,50 40,31 33,31"
+    fill="white"
+    opacity="1"
+  />
+
+  <!-- Small dot — tag hole -->
+  <circle cx="22" cy="26" r="3" fill="white" opacity="0.9" />
+
+</svg>
+
