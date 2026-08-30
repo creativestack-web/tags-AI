@@ -1,0 +1,9 @@
+# robots.txt — TagsAI YouTube Tags Generator
+# https://tagsai-generator.vercel.app/
+
+# Sab search engines ko allow karo
+User-agent: *
+Allow: /
+
+# Sitemap ki location
+Sitemap: https://tagsai-generator.vercel.app/sitemap.xml
