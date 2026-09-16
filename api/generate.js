@@ -75,7 +75,7 @@ Return ONLY valid JSON. No extra text. No markdown. No code fences.
           'Authorization': 'Bearer ' + apiKey,
         },
         body: JSON.stringify({
-          model:       'llama-3.1-8b-instant',
+          model:       'gemma2-9b-it',
           max_tokens:  1500,
           temperature: 0.7,
           messages: [
