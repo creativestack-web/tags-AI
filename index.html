@@ -3,39 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="google-site-verification" content="cu-pyEC6mrRJRYFc-icrF5TNM6jaz0UQVuKnZzlX4zM" />
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-T70TTCBCZR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-T70TTCBCZR');
-</script>
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml" href="favicon.svg" />
-<link rel="icon" type="image/x-icon" href="favicon.ico" />
-<link rel="apple-touch-icon" href="favicon.svg" />
   <title>AI YouTube Tags Generator – Generate 20 Powerful Tags Instantly</title>
   <meta name="description" content="Generate 20 relevant, powerful YouTube video tags instantly using AI. Enter your video title, topic or description and get optimized tags for better discoverability." />
   <meta name="keywords" content="YouTube tags generator, AI YouTube tags, video tags, YouTube SEO, generate YouTube tags, AI tag generator" />
-  <link rel="canonical" href="https://tagsai-generator.vercel.app/" />
-  <!-- Sitemap reference -->
-<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+  <link rel="canonical" href="https://yourdomain.com/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="AI YouTube Tags Generator – Generate 20 Powerful Tags Instantly" />
   <meta property="og:description" content="Generate 20 relevant, powerful YouTube video tags instantly using AI." />
-  <meta property="og:url" content="https://tagsai-generator.vercel.app/" />
-  <meta property="og:image" content="https://tagsai-generator.vercel.app/og-image.png" />
+  <meta property="og:url" content="https://yourdomain.com/" />
+  <meta property="og:image" content="https://yourdomain.com/og-image.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="AI YouTube Tags Generator" />
   <meta name="twitter:description" content="Generate 20 relevant YouTube video tags instantly with AI." />
-  <meta name="twitter:image" content="https://tagsai-generator.vercel.app/og-image.png" />
+  <meta name="twitter:image" content="https://yourdomain.com/og-image.png" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -256,7 +240,7 @@
                 <div class="bar"></div>
               </div>
             </div>
-            <p class="loading-text">AI is generating your YouTube tags...</p>
+            <p class="loading-text">AI is generating your tags and description...</p>
             <p class="loading-subtext">This usually takes just a few seconds.</p>
           </div>
 
@@ -312,6 +296,38 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
               <span id="copyNotificationText">Copied to clipboard!</span>
             </div>
+			<!-- DESCRIPTION SECTION -->
+<div class="desc-section" id="descSection" style="display:none;" aria-live="polite" aria-label="Generated description">
+
+  <div class="desc-header">
+    <div class="desc-title-area">
+      <h3 class="desc-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        YouTube Description
+      </h3>
+    </div>
+    <div class="desc-actions">
+      <button class="btn btn--secondary btn--small copy-desc-btn" id="copyDescBtn" type="button" aria-label="Copy description to clipboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span class="copy-desc-text">Copy Description</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="results-hint">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    Copy this description and paste it into your YouTube video description field.
+  </p>
+
+  <div class="desc-box">
+    <pre class="desc-text" id="descText"></pre>
+  </div>
+
+  <div class="desc-footer">
+    <span class="desc-char-count" id="descCharCount">0 / 5,000 characters</span>
+  </div>
+
+</div>
           </div>
 
         </div>

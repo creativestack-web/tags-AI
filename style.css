@@ -1732,3 +1732,131 @@ textarea {
     scroll-behavior: auto;
   }
 }
+/* ================================================================
+   DESCRIPTION SECTION STYLES
+   ================================================================ */
+
+.desc-section {
+  margin-top: var(--spacing-xl);
+  animation: fadeIn 0.4s ease;
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-xl);
+}
+
+/* Header */
+.desc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.desc-title-area {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.desc-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* Copy button */
+.copy-desc-btn {
+  flex-shrink: 0;
+}
+
+/* Description text box */
+.desc-box {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-sm) 0;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: border-color var(--transition-base);
+}
+
+.desc-box:hover {
+  border-color: var(--color-border-light);
+}
+
+.desc-text {
+  font-family: var(--font-family);
+  font-size: 0.92rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+/* Footer — character counter */
+.desc-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+}
+
+.desc-char-count {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.desc-char-count.desc-count--warning {
+  color: var(--color-warning);
+  border-color: rgba(255, 152, 0, 0.3);
+  background: rgba(255, 152, 0, 0.08);
+}
+
+.desc-char-count.desc-count--danger {
+  color: var(--color-error);
+  border-color: rgba(244, 67, 54, 0.3);
+  background: rgba(244, 67, 54, 0.08);
+}
+
+/* Scrollbar for desc box */
+.desc-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.desc-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.desc-box::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
+  border-radius: var(--radius-full);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .desc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .copy-desc-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .desc-box {
+    max-height: 300px;
+    padding: var(--spacing-md);
+  }
+}
