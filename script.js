@@ -1,33 +1,19 @@
 /* ================================================================
    TAGSAI - MAIN JAVASCRIPT
-   YouTube Tags Generator + Description Generator
-   Powered by Groq AI
-
+   YouTube Tags + Description Generator
+   API key Vercel environment variable mein safe hai
    FILE: script.js
    ================================================================ */
 
 'use strict';
 
-/* ----------------------------------------------------------------
-   ★★★ API CONFIGURATION ★★★
-   Sirf API key yahan paste karo.
-   Baaki kuch mat badlo.
-   ---------------------------------------------------------------- */
+/* ================================================================
+   CONFIG
+   API key yahan nahi — Vercel par safe hai
+   ================================================================ */
 const CONFIG = {
-
-  // ★ APNI GROQ API KEY YAHAN PASTE KARO ★
-  API_KEY: "APNI_GROQ_KEY_YAHAN_PASTE_KARO",
-
-  // Groq API endpoint
-  API_ENDPOINT: "https://api.groq.com/openai/v1/chat/completions",
-
-  // Free Groq model
-  MODEL: "llama3-8b-8192",
-
-  // Tokens — description ke liye zyada chahiye
-  MAX_TOKENS: 1500,
-
-  // YouTube limits
+  // Vercel serverless function endpoint
+  API_ENDPOINT:          '/api/generate',
   DESCRIPTION_MAX_CHARS: 5000,
   DESCRIPTION_SAFE_LIMIT: 4500,
 };
@@ -36,59 +22,46 @@ const CONFIG = {
    DOM REFERENCES
    ================================================================ */
 const DOM = {
-  // Input
-  videoInput:    document.getElementById('videoInput'),
-  charCount:     document.getElementById('charCount'),
-  inputHint:     document.getElementById('inputHint'),
-  clearInputBtn: document.getElementById('clearInputBtn'),
-
-  // Generate button
+  videoInput:      document.getElementById('videoInput'),
+  charCount:       document.getElementById('charCount'),
+  inputHint:       document.getElementById('inputHint'),
+  clearInputBtn:   document.getElementById('clearInputBtn'),
   generateBtn:     document.getElementById('generateBtn'),
   generateBtnText: document.querySelector('.btn-text'),
   generateBtnLoad: document.querySelector('.btn-loading'),
-
-  // States
-  loadingState:  document.getElementById('loadingState'),
-  errorState:    document.getElementById('errorState'),
-  errorMessage:  document.getElementById('errorMessage'),
-  errorCloseBtn: document.getElementById('errorCloseBtn'),
-  emptyState:    document.getElementById('emptyState'),
-
-  // Tags results
+  loadingState:    document.getElementById('loadingState'),
+  errorState:      document.getElementById('errorState'),
+  errorMessage:    document.getElementById('errorMessage'),
+  errorCloseBtn:   document.getElementById('errorCloseBtn'),
+  emptyState:      document.getElementById('emptyState'),
   resultsSection:  document.getElementById('resultsSection'),
   tagsContainer:   document.getElementById('tagsContainer'),
   tagCountBadge:   document.getElementById('tagCountBadge'),
   copyAllBtn:      document.getElementById('copyAllBtn'),
   copyAllText:     document.querySelector('.copy-all-text'),
-
-  // Description results
-  descSection:       document.getElementById('descSection'),
-  descText:          document.getElementById('descText'),
-  descCharCount:     document.getElementById('descCharCount'),
-  copyDescBtn:       document.getElementById('copyDescBtn'),
-  copyDescText:      document.querySelector('.copy-desc-text'),
-
-  // Notifications
+  descSection:     document.getElementById('descSection'),
+  descText:        document.getElementById('descText'),
+  descCharCount:   document.getElementById('descCharCount'),
+  copyDescBtn:     document.getElementById('copyDescBtn'),
+  copyDescText:    document.querySelector('.copy-desc-text'),
   copyNotification: document.getElementById('copyNotification'),
-  copyNotifText:    document.getElementById('copyNotificationText'),
-
-  // Nav
-  navToggle:   document.getElementById('navToggle'),
-  navMenu:     document.getElementById('navMenu'),
-  currentYear: document.getElementById('currentYear'),
+  copyNotifText:   document.getElementById('copyNotificationText'),
+  navToggle:       document.getElementById('navToggle'),
+  navMenu:         document.getElementById('navMenu'),
+  currentYear:     document.getElementById('currentYear'),
 };
 
 /* ================================================================
    STATE
    ================================================================ */
 const State = {
-  isGenerating:      false,
-  currentTags:       [],
-  currentDesc:       '',
-  copyAllTimeout:    null,
-  copyDescTimeout:   null,
-  notifTimeout:      null,
-  tagCopyTimers:     {},
+  isGenerating:    false,
+  currentTags:     [],
+  currentDesc:     '',
+  copyAllTimeout:  null,
+  copyDescTimeout: null,
+  notifTimeout:    null,
+  tagCopyTimers:   {},
 };
 
 /* ================================================================
@@ -200,9 +173,8 @@ async function handleGenerate() {
 
   const userInput = DOM.videoInput.value.trim();
 
-  // Validate
   if (!userInput) {
-    showError('Please enter a video title, topic, keywords or description before generating.');
+    showError('Please enter a video title, topic or description before generating.');
     DOM.videoInput.focus();
     return;
   }
@@ -213,24 +185,11 @@ async function handleGenerate() {
     return;
   }
 
-  // API key check
-  if (
-    !CONFIG.API_KEY ||
-    CONFIG.API_KEY.trim() === '' ||
-    CONFIG.API_KEY === 'APNI_GROQ_KEY_YAHAN_PASTE_KARO' ||
-    CONFIG.API_KEY.length < 20
-  ) {
-    showError(
-      'API key nahi lagi. script.js mein CONFIG.API_KEY mein apni Groq key paste karo.'
-    );
-    return;
-  }
-
   startLoadingState();
   hideError();
 
   try {
-    const result = await fetchFromAI(userInput);
+    const result = await fetchFromAPI(userInput);
     displayTags(result.tags);
     displayDescription(result.description);
     scrollToResults();
@@ -242,49 +201,9 @@ async function handleGenerate() {
 }
 
 /* ================================================================
-   GROQ AI API CALL — Tags + Description Together
+   API CALL — Vercel Function Ko Call Karo
    ================================================================ */
-async function fetchFromAI(userInput) {
-
-  const prompt = `You are an expert YouTube SEO specialist.
-
-A user has a YouTube video with this title/topic:
-"${userInput}"
-
-Your job is to generate TWO things:
-
-1. Exactly 20 highly relevant YouTube video tags
-2. A well-written, SEO-friendly YouTube video description
-
-RULES FOR TAGS:
-- Exactly 20 tags
-- All tags must be relevant to the video topic
-- Mix short-tail (1-2 words) and long-tail (3-5 words)
-- Lowercase only
-- No hashtags, quotes, or special characters
-- No duplicate tags
-
-RULES FOR DESCRIPTION:
-- Write a natural, useful, SEO-friendly YouTube description
-- Length: between 800 and 3000 characters (STRICT LIMIT — never exceed 4500 characters)
-- Start with a strong 2-3 line opening (shown before "Show more")
-- Naturally include the main keyword from the title
-- Include relevant secondary keywords where appropriate
-- Use short paragraphs for readability
-- Use bullet points when appropriate
-- Include a simple CTA (like, subscribe, comment)
-- Do NOT invent specific facts not in the title
-- Do NOT make fake claims about views, income, or guaranteed results
-- Do NOT use excessive emojis (max 3-4 total)
-- Do NOT keyword-stuff
-- Do NOT include irrelevant keywords
-- Write for humans first, search engines second
-
-RESPONSE FORMAT:
-Return ONLY a valid JSON object. No extra text. No markdown. No code fences.
-Exactly this format:
-
-{"tags":["tag one","tag two","tag three","tag four","tag five","tag six","tag seven","tag eight","tag nine","tag ten","tag eleven","tag twelve","tag thirteen","tag fourteen","tag fifteen","tag sixteen","tag seventeen","tag eighteen","tag nineteen","tag twenty"],"description":"Your full description text here"}`;
+async function fetchFromAPI(userInput) {
 
   let response;
 
@@ -292,15 +211,9 @@ Exactly this format:
     response = await fetch(CONFIG.API_ENDPOINT, {
       method: 'POST',
       headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + CONFIG.API_KEY,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model:       CONFIG.MODEL,
-        max_tokens:  CONFIG.MAX_TOKENS,
-        messages:    [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-      }),
+      body: JSON.stringify({ userInput }),
     });
 
   } catch (networkErr) {
@@ -310,111 +223,39 @@ Exactly this format:
   if (!response.ok) {
     const errorBody = await safeParseJSON(response);
     const status    = response.status;
+    const errMsg    = errorBody?.error || '';
 
-    if (status === 401) throw new Error('invalid_key');
-    if (status === 429) throw new Error('rate_limit');
-    if (status === 500 || status === 503) throw new Error('server_error');
+    if (status === 401 || errMsg === 'invalid_key') {
+      throw new Error('invalid_key');
+    }
+    if (status === 429 || errMsg === 'rate_limit') {
+      throw new Error('rate_limit');
+    }
+    if (status === 500 || status === 503) {
+      throw new Error('server_error');
+    }
 
-    const msg = errorBody?.error?.message || `HTTP ${status}`;
-    throw new Error('api_error:' + msg);
+    throw new Error('api_error:' + (errMsg || `HTTP ${status}`));
   }
 
-  const data    = await safeParseJSON(response);
-  const rawText = data?.choices?.[0]?.message?.content?.trim();
+  const data = await safeParseJSON(response);
 
-  if (!rawText) throw new Error('empty_response');
+  if (!data) {
+    throw new Error('parse_error');
+  }
 
-  // Parse JSON response
-  const parsed = parseAIResponse(rawText);
-
-  // Validate tags
-  if (!parsed.tags || parsed.tags.length === 0) {
+  if (!data.tags || data.tags.length === 0) {
     throw new Error('no_tags');
   }
 
-  // Validate description
-  if (!parsed.description || parsed.description.trim().length < 50) {
+  if (!data.description || data.description.length < 50) {
     throw new Error('no_description');
   }
 
-  // Safety check — trim description if over limit
-  parsed.description = enforcDescriptionLimit(parsed.description);
-
   return {
-    tags:        cleanTagArray(parsed.tags),
-    description: parsed.description,
+    tags:        cleanTagArray(data.tags),
+    description: data.description,
   };
-}
-
-/* ================================================================
-   DESCRIPTION CHARACTER LIMIT ENFORCEMENT
-   ================================================================ */
-function enforcDescriptionLimit(text) {
-  if (!text) return '';
-
-  // If under safe limit — return as is
-  if (text.length <= CONFIG.DESCRIPTION_SAFE_LIMIT) {
-    return text;
-  }
-
-  // Trim to safe limit — cut at last complete sentence
-  let trimmed = text.substring(0, CONFIG.DESCRIPTION_SAFE_LIMIT);
-
-  // Find last sentence end
-  const lastPeriod    = trimmed.lastIndexOf('.');
-  const lastNewline   = trimmed.lastIndexOf('\n');
-  const cutPoint      = Math.max(lastPeriod, lastNewline);
-
-  if (cutPoint > CONFIG.DESCRIPTION_SAFE_LIMIT * 0.7) {
-    trimmed = trimmed.substring(0, cutPoint + 1);
-  }
-
-  return trimmed.trim();
-}
-
-/* ================================================================
-   PARSE AI RESPONSE
-   ================================================================ */
-function parseAIResponse(text) {
-
-  // Strategy 1: Clean JSON parse
-  try {
-    const parsed = JSON.parse(text);
-    if (parsed && parsed.tags && parsed.description) {
-      return parsed;
-    }
-  } catch {
-    // Try next
-  }
-
-  // Strategy 2: Extract JSON from within text
-  try {
-    const jsonMatch = text.match(/\{[\s\S]*"tags"[\s\S]*"description"[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (parsed && parsed.tags && parsed.description) {
-        return parsed;
-      }
-    }
-  } catch {
-    // Try next
-  }
-
-  // Strategy 3: Try reversed order (description before tags)
-  try {
-    const jsonMatch = text.match(/\{[\s\S]*"description"[\s\S]*"tags"[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (parsed && parsed.tags && parsed.description) {
-        return parsed;
-      }
-    }
-  } catch {
-    // Failed
-  }
-
-  // Return empty if all fail
-  return { tags: [], description: '' };
 }
 
 /* ================================================================
@@ -458,7 +299,7 @@ function cleanTagArray(rawTags) {
    DISPLAY TAGS
    ================================================================ */
 function displayTags(tags) {
-  State.currentTags        = tags;
+  State.currentTags           = tags;
   DOM.tagsContainer.innerHTML = '';
 
   DOM.tagCountBadge.textContent = `${tags.length} tag${tags.length !== 1 ? 's' : ''}`;
@@ -476,7 +317,7 @@ function createTagChip(tag, index) {
   button.type  = 'button';
   button.setAttribute('role', 'listitem');
   button.setAttribute('aria-label', `Copy tag: ${tag}`);
-  button.className = 'tag-chip';
+  button.className            = 'tag-chip';
   button.style.animationDelay = `${index * 0.04}s`;
 
   const iconSVG = `<svg class="tag-chip__icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
@@ -493,15 +334,11 @@ function createTagChip(tag, index) {
    DISPLAY DESCRIPTION
    ================================================================ */
 function displayDescription(description) {
-  State.currentDesc = description;
-
-  // Set text content
+  State.currentDesc    = description;
   DOM.descText.textContent = description;
 
-  // Update character counter
   updateDescCharCount(description.length);
 
-  // Show description section
   DOM.descSection.style.display = 'block';
 }
 
@@ -510,7 +347,6 @@ function updateDescCharCount(length) {
   const counter = DOM.descCharCount;
 
   counter.textContent = `${length.toLocaleString()} / ${max.toLocaleString()} characters`;
-
   counter.classList.remove('desc-count--warning', 'desc-count--danger');
 
   if (length > max * 0.95) {
@@ -520,9 +356,6 @@ function updateDescCharCount(length) {
   }
 }
 
-/* ================================================================
-   ESCAPE HTML
-   ================================================================ */
 function escapeHTML(str) {
   const div = document.createElement('div');
   div.appendChild(document.createTextNode(str));
@@ -550,7 +383,9 @@ function copyIndividualTag(tag, chipElement) {
       }, 2000);
 
       if (tagIndex >= 0) {
-        if (State.tagCopyTimers[tagIndex]) clearTimeout(State.tagCopyTimers[tagIndex]);
+        if (State.tagCopyTimers[tagIndex]) {
+          clearTimeout(State.tagCopyTimers[tagIndex]);
+        }
         State.tagCopyTimers[tagIndex] = timerId;
       }
     })
@@ -692,13 +527,14 @@ function handleAPIError(err) {
   console.error('[TagsAI] Error:', err);
 
   const messages = {
-    'network_error':   'Internet connection problem. Check your connection and try again.',
-    'invalid_key':     'Groq API key galat hai. script.js mein CONFIG.API_KEY check karo.',
-    'rate_limit':      'Too many requests. Please wait 1 minute and try again.',
-    'server_error':    'Groq service mein temporary problem. Thodi der baad try karo.',
-    'empty_response':  'AI ne koi response nahi diya. Dobara Generate dabao.',
-    'no_tags':         'Tags generate nahi hue. Thodi aur detail likho aur try karo.',
-    'no_description':  'Description generate nahi hui. Dobara try karo.',
+    'network_error':  'Internet connection problem. Check your connection and try again.',
+    'invalid_key':    'API key problem. Vercel environment variables check karo.',
+    'rate_limit':     'Too many requests. Please wait 1 minute and try again.',
+    'server_error':   'Server mein temporary problem. Thodi der baad try karo.',
+    'empty_response': 'AI ne koi response nahi diya. Dobara Generate dabao.',
+    'no_tags':        'Tags generate nahi hue. Thodi aur detail likho.',
+    'no_description': 'Description generate nahi hui. Dobara try karo.',
+    'parse_error':    'Response samajh nahi aaya. Dobara try karo.',
   };
 
   let userMessage = 'Something went wrong. Please try again.';
@@ -725,7 +561,8 @@ function handleAPIError(err) {
 function scrollToResults() {
   setTimeout(function() {
     if (!DOM.resultsSection) return;
-    const top = DOM.resultsSection.getBoundingClientRect().top + window.pageYOffset - 80;
+    const top = DOM.resultsSection.getBoundingClientRect().top
+              + window.pageYOffset - 80;
     window.scrollTo({ top, behavior: 'smooth' });
   }, 100);
 }
