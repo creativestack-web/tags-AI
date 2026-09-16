@@ -75,7 +75,7 @@ Return ONLY valid JSON. No extra text. No markdown. No code fences.
           'Authorization': 'Bearer ' + apiKey,
         },
         body: JSON.stringify({
-          model:       'gemma2-9b-it',
+          model:       'openai/gpt-oss-120b',
           max_tokens:  1500,
           temperature: 0.7,
           messages: [
